@@ -20,6 +20,31 @@ Sign in with `demo@example.com` / `demo1234`.
 Retrace cannot open `localhost`. It only opens public addresses, so for a real
 Retrace run, deploy it (below) or put a public tunnel in front of port 3000.
 
+## Deploy to Vercel
+
+1. Push this repo to GitHub, then import it at https://vercel.com/new.
+   Keep the defaults: `vercel.json` already sets the build and routing.
+2. Before the first deploy, add environment variables under
+   **Settings > Environment Variables**: at least `SESSION_SECRET`, plus
+   `UI_VERSION` and `LOGIN_MODE` (see below).
+3. Use the **production domain** (`https://<project>.vercel.app`) in Retrace,
+   not a per-deployment URL. Vercel puts its own login wall (Deployment
+   Protection) in front of preview and per-deployment URLs, and Retrace would
+   hit that instead of this app's login. If the production domain shows a
+   Vercel login too, turn protection off under **Settings > Deployment Protection**.
+
+**Changing the UI on Vercel:** edit the variable in **Settings > Environment
+Variables**, then **Deployments > ... > Redeploy**. A changed variable only
+takes effect after a redeploy. Check `https://<project>.vercel.app/flags`
+to confirm the new values are live.
+
+**Data on Vercel resets often.** Each serverless instance keeps its own
+in-memory copy and Vercel starts and stops them freely, so a project you just
+created can be gone on the next request. Logins are unaffected (they live in a
+signed cookie), and the seeded projects and members are always there. Record
+guides that navigate and fill forms, and don't rely on data a previous step
+created. If that becomes a problem, use Cloud Run with one instance instead.
+
 ## Deploy to Cloud Run
 
 ```bash

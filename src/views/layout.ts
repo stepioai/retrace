@@ -1,7 +1,8 @@
 import { flags } from "../flags";
 import { cls, esc, ids } from "./html";
 
-const STYLE = `
+// A function, not a constant: the accent can change at runtime through /switch.
+const style = () => `
 :root { --accent: ${flags.accent}; --bg: #f8fafc; --card: #fff; --text: #0f172a; --muted: #64748b; --border: #e2e8f0; }
 * { box-sizing: border-box; }
 body { margin: 0; font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
@@ -43,7 +44,7 @@ details.menu .items a:hover { background: var(--bg); }
 export function page(title: string, body: string): string {
     return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${esc(title)} | Acme Projects</title><style>${STYLE}</style></head>
+<title>${esc(title)} | Acme Projects</title><style>${style()}</style></head>
 <body>${body}</body></html>`;
 }
 

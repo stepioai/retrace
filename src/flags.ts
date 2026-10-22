@@ -6,7 +6,8 @@
  * UI_VERSION picks a preset; any single variable below overrides the preset.
  */
 
-export type LoginMode = "password" | "two_step" | "otp" | "sso_only" | "captcha";
+export const LOGIN_MODES = ["password", "two_step", "otp", "sso_only", "captcha"] as const;
+export type LoginMode = (typeof LOGIN_MODES)[number];
 
 export interface Flags {
     uiVersion: string;
@@ -120,7 +121,27 @@ function readFlags(env: NodeJS.ProcessEnv): Flags {
     return { ...BASELINE, ...preset, ...defined, uiVersion: version };
 }
 
+export const PRESET_NAMES = Object.keys(PRESETS);
+
 export const flags: Flags = readFlags(process.env);
+
+/** What the /switch page chose. Empty fields fall back to the env vars. */
+export interface Switch {
+    uiVersion?: string;
+    loginMode?: string;
+}
+
+/**
+ * Rebuilds the flags in place with the switch on top of the env vars, so every
+ * module holding `flags` sees the change on its next read. Unknown values are
+ * ignored rather than taking the app down.
+ */
+export function applySwitch(sw: Switch): void {
+    const env = { ...process.env };
+    if (sw.uiVersion && PRESETS[sw.uiVersion]) env.UI_VERSION = sw.uiVersion;
+    if (sw.loginMode && (LOGIN_MODES as readonly string[]).includes(sw.loginMode)) env.LOGIN_MODE = sw.loginMode;
+    Object.assign(flags, readFlags(env));
+}
 
 export const demoUser = {
     email: process.env.DEMO_EMAIL || "demo@example.com",

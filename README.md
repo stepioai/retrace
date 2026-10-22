@@ -33,10 +33,19 @@ Retrace run, deploy it (below) or put a public tunnel in front of port 3000.
    hit that instead of this app's login. If the production domain shows a
    Vercel login too, turn protection off under **Settings > Deployment Protection**.
 
-**Changing the UI on Vercel:** edit the variable in **Settings > Environment
-Variables**, then **Deployments > ... > Redeploy**. A changed variable only
-takes effect after a redeploy. Check `https://<project>.vercel.app/flags`
-to confirm the new values are live.
+**Changing the UI on Vercel:** open `https://<project>.vercel.app/switch` and
+click a version or login mode. The same address serves the new version within
+about 2 seconds, with no redeploy, so Retrace keeps seeing the same app.
+"Reset to env vars" goes back to the env values.
+
+The switch needs a shared store, because each Vercel instance has its own
+memory. One-time setup: **Storage > Create Database > Upstash for Redis**
+(free plan), connect it to this project, then redeploy once. That adds
+`KV_REST_API_URL` and `KV_REST_API_TOKEN` (`UPSTASH_REDIS_REST_URL` /
+`UPSTASH_REDIS_REST_TOKEN` work too). Without them the switch page shows a
+warning, and the choice only holds on one instance. Locally, memory is enough.
+
+Env vars still work and set the default the switch falls back to.
 
 **Data on Vercel resets often.** Each serverless instance keeps its own
 in-memory copy and Vercel starts and stops them freely, so a project you just
@@ -44,19 +53,6 @@ created can be gone on the next request. Logins are unaffected (they live in a
 signed cookie), and the seeded projects and members are always there. Record
 guides that navigate and fill forms, and don't rely on data a previous step
 created. If that becomes a problem, use Cloud Run with one instance instead.
-
-### Two versions side by side on Vercel
-
-Vercel env vars can differ per environment, so one project can serve two
-versions at once:
-
-- **Production** (the `main` branch): `UI_VERSION=v1`
-- **Preview** (any other branch, e.g. `v2`): `UI_VERSION=v2`
-
-Push a branch named `v2`; it deploys to
-`https://<project>-git-v2-<team>.vercel.app` with the v2 text while the
-production domain keeps v1. Preview URLs sit behind Vercel's login unless
-Deployment Protection is off.
 
 ## Deploy to Cloud Run
 

@@ -2,6 +2,7 @@ import { Controller, Get, Module } from "@nestjs/common";
 import { AuthController } from "./auth/auth.controller";
 import { flags } from "./flags";
 import { PagesController } from "./pages/pages.controller";
+import { SwitchController } from "./switch/switch.controller";
 
 /** Public: which flags this instance is running with, so a tester can confirm a change landed. */
 @Controller()
@@ -17,5 +18,5 @@ class FlagsController {
     }
 }
 
-@Module({ controllers: [AuthController, PagesController, FlagsController] })
+@Module({ controllers: [AuthController, PagesController, FlagsController, SwitchController] })
 export class AppModule {}

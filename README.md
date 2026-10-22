@@ -45,6 +45,19 @@ signed cookie), and the seeded projects and members are always there. Record
 guides that navigate and fill forms, and don't rely on data a previous step
 created. If that becomes a problem, use Cloud Run with one instance instead.
 
+### Two versions side by side on Vercel
+
+Vercel env vars can differ per environment, so one project can serve two
+versions at once:
+
+- **Production** (the `main` branch): `UI_VERSION=v1`
+- **Preview** (any other branch, e.g. `v2`): `UI_VERSION=v2`
+
+Push a branch named `v2`; it deploys to
+`https://<project>-git-v2-<team>.vercel.app` with the v2 text while the
+production domain keeps v1. Preview URLs sit behind Vercel's login unless
+Deployment Protection is off.
+
 ## Deploy to Cloud Run
 
 ```bash
@@ -75,7 +88,7 @@ Open `https://<your-url>/flags` to confirm which settings are live.
 |---|---|---|
 | `v1` | Nothing. The baseline to record your guides on. | `same` |
 | `cosmetic` | Green accent colour and an announcement bar. | `same` or `minor` |
-| `v2` | Buttons renamed: "New project" to "Add project", "Create project" to "Create", "Save changes" to "Update profile", "Invite member" to "Send invite". | Steps still found (by meaning). `minor` or `changed` |
+| `v2` | Buttons renamed: "New project" to "Add project", "Create project" to "Create", "Save changes" to "Update profile", "Invite member" to "Send invite". Login text changes: "Sign in" to "Welcome back" / "Log in". | Steps still found (by meaning). `minor` or `changed` |
 | `v3` | Navigation moves to the top. "New project" moves into an "Actions" menu. Banner shown. | `changed` |
 | `v4` | Project creation becomes a 2-step wizard, Settings moves to `/app/preferences`, the Team page is removed, and ids/test ids are gone. | `changed` or `not_reached` |
 
@@ -106,6 +119,9 @@ Each one overrides the preset. Leave it unset to use the preset's value.
 | `LABEL_CREATE` | any text | `Create project` |
 | `LABEL_SAVE` | any text | `Save changes` |
 | `LABEL_INVITE` | any text | `Invite member` |
+| `LOGIN_HEADING` | any text | `Sign in` |
+| `LOGIN_SUBTITLE` | any text | `Acme Projects test app` |
+| `LABEL_SIGN_IN` | any text | `Sign in` |
 | `STABLE_IDS` | `true`, `false` | `true` |
 | `PROJECT_WIZARD` | `true`, `false` | `false` |
 | `SETTINGS_PATH` | `/app/settings`, `/app/preferences` | `/app/settings` |

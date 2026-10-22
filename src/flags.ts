@@ -17,6 +17,9 @@ export interface Flags {
     createLabel: string;
     saveLabel: string;
     inviteLabel: string;
+    loginHeading: string;
+    loginSubtitle: string;
+    signInLabel: string;
     stableIds: boolean;
     projectWizard: boolean;
     settingsPath: string;
@@ -34,6 +37,9 @@ const BASELINE: Flags = {
     createLabel: "Create project",
     saveLabel: "Save changes",
     inviteLabel: "Invite member",
+    loginHeading: "Sign in",
+    loginSubtitle: "Acme Projects test app",
+    signInLabel: "Sign in",
     stableIds: true,
     projectWizard: false,
     settingsPath: "/app/settings",
@@ -57,6 +63,9 @@ const PRESETS: Record<string, Partial<Flags>> = {
         createLabel: "Create",
         saveLabel: "Update profile",
         inviteLabel: "Send invite",
+        loginHeading: "Welcome back",
+        loginSubtitle: "Log in to your Acme account",
+        signInLabel: "Log in",
     },
     // Navigation moved to the top, "New project" hidden in a menu.
     v3: {
@@ -97,6 +106,9 @@ function readFlags(env: NodeJS.ProcessEnv): Flags {
         createLabel: str(env.LABEL_CREATE),
         saveLabel: str(env.LABEL_SAVE),
         inviteLabel: str(env.LABEL_INVITE),
+        loginHeading: str(env.LOGIN_HEADING),
+        loginSubtitle: str(env.LOGIN_SUBTITLE),
+        signInLabel: str(env.LABEL_SIGN_IN),
         stableIds: bool(env.STABLE_IDS),
         projectWizard: bool(env.PROJECT_WIZARD),
         settingsPath: str(env.SETTINGS_PATH),

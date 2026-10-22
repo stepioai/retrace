@@ -1,15 +1,15 @@
 import { Controller, Get, Module } from "@nestjs/common";
 import { AuthController } from "./auth/auth.controller";
 import { flags } from "./flags";
+import { remoteStatus } from "./remote-flags";
 import { PagesController } from "./pages/pages.controller";
-import { SwitchController } from "./switch/switch.controller";
 
 /** Public: which flags this instance is running with, so a tester can confirm a change landed. */
 @Controller()
 class FlagsController {
     @Get("flags")
     get() {
-        return flags;
+        return { ...flags, remote: remoteStatus() };
     }
 
     @Get("healthz")
@@ -18,5 +18,5 @@ class FlagsController {
     }
 }
 
-@Module({ controllers: [AuthController, PagesController, FlagsController, SwitchController] })
+@Module({ controllers: [AuthController, PagesController, FlagsController] })
 export class AppModule {}

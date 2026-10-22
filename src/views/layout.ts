@@ -1,7 +1,7 @@
 import { flags } from "../flags";
 import { cls, esc, ids } from "./html";
 
-// A function, not a constant: the accent can change at runtime through /switch.
+// A function, not a constant: the accent can change at runtime through the feature_flags row.
 const style = () => `
 :root { --accent: ${flags.accent}; --bg: #f8fafc; --card: #fff; --text: #0f172a; --muted: #64748b; --border: #e2e8f0; }
 * { box-sizing: border-box; }

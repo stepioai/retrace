@@ -121,25 +121,21 @@ function readFlags(env: NodeJS.ProcessEnv): Flags {
     return { ...BASELINE, ...preset, ...defined, uiVersion: version };
 }
 
-export const PRESET_NAMES = Object.keys(PRESETS);
-
 export const flags: Flags = readFlags(process.env);
 
-/** What the /switch page chose. Empty fields fall back to the env vars. */
-export interface Switch {
-    uiVersion?: string;
-    loginMode?: string;
-}
-
 /**
- * Rebuilds the flags in place with the switch on top of the env vars, so every
- * module holding `flags` sees the change on its next read. Unknown values are
- * ignored rather than taking the app down.
+ * Rebuilds the flags in place with the remote values (the feature_flags row,
+ * keyed by env var name) on top of the env vars, so every module holding
+ * `flags` sees the change on its next read. Unknown versions or login modes
+ * are dropped rather than taking the app down.
  */
-export function applySwitch(sw: Switch): void {
-    const env = { ...process.env };
-    if (sw.uiVersion && PRESETS[sw.uiVersion]) env.UI_VERSION = sw.uiVersion;
-    if (sw.loginMode && (LOGIN_MODES as readonly string[]).includes(sw.loginMode)) env.LOGIN_MODE = sw.loginMode;
+export function applyRemote(values: Record<string, unknown>): void {
+    const env: NodeJS.ProcessEnv = { ...process.env };
+    for (const [k, v] of Object.entries(values)) {
+        if (["string", "number", "boolean"].includes(typeof v)) env[k] = String(v);
+    }
+    if (env.UI_VERSION && !PRESETS[env.UI_VERSION]) env.UI_VERSION = process.env.UI_VERSION;
+    if (env.LOGIN_MODE && !(LOGIN_MODES as readonly string[]).includes(env.LOGIN_MODE)) env.LOGIN_MODE = process.env.LOGIN_MODE;
     Object.assign(flags, readFlags(env));
 }
 

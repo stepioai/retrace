@@ -33,19 +33,24 @@ Retrace run, deploy it (below) or put a public tunnel in front of port 3000.
    hit that instead of this app's login. If the production domain shows a
    Vercel login too, turn protection off under **Settings > Deployment Protection**.
 
-**Changing the UI on Vercel:** open `https://<project>.vercel.app/switch` and
-click a version or login mode. The same address serves the new version within
-about 2 seconds, with no redeploy, so Retrace keeps seeing the same app.
-"Reset to env vars" goes back to the env values.
+**Changing the UI on Vercel:** edit the `retrace-test-app` row in Stepio's
+`feature_flags` table (Supabase table editor). Its `value` uses the env var
+names below, for example:
 
-The switch needs a shared store, because each Vercel instance has its own
-memory. One-time setup: **Storage > Create Database > Upstash for Redis**
-(free plan), connect it to this project, then redeploy once. That adds
-`KV_REST_API_URL` and `KV_REST_API_TOKEN` (`UPSTASH_REDIS_REST_URL` /
-`UPSTASH_REDIS_REST_TOKEN` work too). Without them the switch page shows a
-warning, and the choice only holds on one instance. Locally, memory is enough.
+```json
+{"UI_VERSION": "v3", "LOGIN_MODE": "password", "LABEL_SAVE": "Update"}
+```
 
-Env vars still work and set the default the switch falls back to.
+Every instance reads the row through the Stepio API every few seconds, so the
+same address serves the new version within about 3 seconds, with no redeploy,
+and Retrace keeps seeing the same app. Values in the row win over env vars;
+an unknown `UI_VERSION` or `LOGIN_MODE` is ignored.
+
+One-time setup: set `FLAGS_URL` to
+`https://<stepio-dev-api>/v1/feature-flags/retrace-test-app` in **Settings >
+Environment Variables** and redeploy once. `/flags` shows the live values and,
+under `remote`, the row it read and any error. Without `FLAGS_URL` the app
+runs on env vars alone.
 
 **Data on Vercel resets often.** Each serverless instance keeps its own
 in-memory copy and Vercel starts and stops them freely, so a project you just
@@ -74,7 +79,7 @@ Change the UI later without touching code:
 gcloud run services update retrace-test-app --region us-central1 --update-env-vars UI_VERSION=v2
 ```
 
-Open `https://<your-url>/flags` to confirm which settings are live.
+Open `https://<your-url>/flags` to confirm which settings are live. `FLAGS_URL` works here too.
 
 ## Settings
 
